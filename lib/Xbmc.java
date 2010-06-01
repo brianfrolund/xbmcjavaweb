@@ -22,6 +22,7 @@ public class Xbmc {
 	//	private HttpURLConnection httpURLConnection;
 	private int statusUpdateTimer;
 	private int statusUpdateInterval = 1000;
+	private String namespace;
 
 	private Helper helper = new Helper();
 	//	private JsonRpc jsonRpc = new JsonRpc();
@@ -34,7 +35,7 @@ public class Xbmc {
 
 	public Xbmc(String address, String port, String username, String password, boolean debug, int updateInterval) {
 		this.apiPath = "http://" +address+ ":" +port+ "/jsonrpc";
-		this.username= username;
+		this.username = username;
 		this.password = password;
 		this.debug = debug;
 		this.statusUpdateInterval = updateInterval;
@@ -49,12 +50,7 @@ public class Xbmc {
 		return this.debug;
 	}
 
-	public String log(String message, String level) {
-		//		TODO log method
-		return null;
-	}
-
-	public String post(String namespace, String method, ArrayList<Object> parameters, Integer id) {
+	public String post(String namespace, String method, Object parameters, Integer id) {
 		if (namespace == null || method == null) {
 			this.errorLog.add(new Error("0", "No namespace or method specified"));
 			return "false";
@@ -70,7 +66,7 @@ public class Xbmc {
 				connection.setDoOutput(true);
 
 				OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
-
+				System.out.println("post"+helper.getJson(namespace, method, parameters, id));
 				outputStreamWriter.write(helper.getJson(namespace, method, parameters, id));
 
 				outputStreamWriter.flush();
@@ -106,10 +102,10 @@ public class Xbmc {
 				this.errorLog.add(new Error("2", "Couldn't connect to server"));
 			}
 		}
-		return "hey!";
+		return "false";
 	}
 
-	public String post(String namespace, String method, ArrayList<Object> parameters) {
+	public String post(String namespace, String method, Object parameters) {
 		return this.post(namespace, method, parameters, 1);
 	}
 
@@ -131,16 +127,25 @@ public class Xbmc {
 			}
 		}
 	}
-
+	
+	public String log(String message, String level) {
+		JSONObject parameters = new JSONObject();
+		try {
+			parameters.append("message", message);
+			parameters.append("level", level);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return this.post("XBMC", "Log", parameters);
+	}
+	
 	public int getVolume() {
 		return Integer.valueOf(this.post("XBMC", "GetVolume"));
 	}
 
-	public int setVolume(int volume) {
-		ArrayList<Object> parameters = new ArrayList<Object>();
-		parameters.add(new Integer(volume));
-		this.post("XBMC", "SetVolume", parameters);
-		return 0;
+	public String setVolume(int volume) {
+		return this.post("XBMC", "SetVolume", volume);
 	}
 
 	public ArrayList<Error> getErrors() {
