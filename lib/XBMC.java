@@ -24,7 +24,7 @@ public class XBMC {
 	private int statusUpdateInterval = 1000;
 	private String namespace = "XBMC";
 
-	//	private JsonRpc jsonRpc = new JsonRpc();
+	private JSONRPC jsonrpc = new JSONRPC(this);
 	//	private System system = new System();
 	//	private Status status = new Status();
 	//	private Files files = new Files();
@@ -51,6 +51,10 @@ public class XBMC {
 	
 	public Player getPlayer() {
 		return this.player;
+	}
+	
+	public JSONRPC getJSONRPC() {
+		return this.jsonrpc;
 	}
 
 	public String post(String namespace, String method, Object parameters, Integer id) {
