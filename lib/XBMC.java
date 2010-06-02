@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Xbmc {
+public class XBMC {
 	private String apiPath = "";
 	private String username = "";
 	private String password = "";
@@ -22,18 +22,17 @@ public class Xbmc {
 	//	private HttpURLConnection httpURLConnection;
 	private int statusUpdateTimer;
 	private int statusUpdateInterval = 1000;
-	private String namespace;
+	private String namespace = "XBMC";
 
-	private Helper helper = new Helper();
 	//	private JsonRpc jsonRpc = new JsonRpc();
 	//	private System system = new System();
 	//	private Status status = new Status();
 	//	private Files files = new Files();
-	//	private Player player = new Player();
+	private Player player = new Player(this);
 	//	private Playlist playlist = new Playlist();
 	//	private Library library = new Library();
 
-	public Xbmc(String address, String port, String username, String password, boolean debug, int updateInterval) {
+	public XBMC(String address, String port, String username, String password, boolean debug, int updateInterval) {
 		this.apiPath = "http://" +address+ ":" +port+ "/jsonrpc";
 		this.username = username;
 		this.password = password;
@@ -48,6 +47,10 @@ public class Xbmc {
 
 	public Boolean isDebuggingENabled() {
 		return this.debug;
+	}
+	
+	public Player getPlayer() {
+		return this.player;
 	}
 
 	public String post(String namespace, String method, Object parameters, Integer id) {
@@ -66,8 +69,8 @@ public class Xbmc {
 				connection.setDoOutput(true);
 
 				OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
-				System.out.println("post"+helper.getJson(namespace, method, parameters, id));
-				outputStreamWriter.write(helper.getJson(namespace, method, parameters, id));
+				System.out.println("post"+Helper.getHelper().getJson(namespace, method, parameters, id));
+				outputStreamWriter.write(Helper.getHelper().getJson(namespace, method, parameters, id));
 
 				outputStreamWriter.flush();
 
@@ -80,11 +83,11 @@ public class Xbmc {
 				}
 				outputStreamWriter.close();
 				bufferedReader.close();
-				JSONObject jSONObject = new JSONObject(allLines);
-
-				if (jSONObject.has("error") || allLines.equals("")) {
-					if (jSONObject.has("error")) {
-						this.errorLog.add(new Error(jSONObject.getJSONObject("error").getString("code"), jSONObject.getJSONObject("error").getString("message")));
+				JSONObject response = new JSONObject(allLines);
+				System.out.println("response"+response);
+				if (response.has("error") || allLines.equals("")) {
+					if (response.has("error")) {
+						this.errorLog.add(new Error(response.getJSONObject("error").getString("code"), response.getJSONObject("error").getString("message")));
 					}
 					else {
 						this.errorLog.add(new Error("1", "No response from server"));
@@ -94,7 +97,7 @@ public class Xbmc {
 				}
 				
 				else {
-					return jSONObject.getString("result");
+					return response.getString("result");
 				}
 		
 			} catch (Exception e) {
@@ -137,15 +140,15 @@ public class Xbmc {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return this.post("XBMC", "Log", parameters);
+		return this.post(this.namespace, "Log", parameters);
 	}
 	
 	public int getVolume() {
-		return Integer.valueOf(this.post("XBMC", "GetVolume"));
+		return Integer.valueOf(this.post(this.namespace, "GetVolume"));
 	}
 
 	public String setVolume(int volume) {
-		return this.post("XBMC", "SetVolume", volume);
+		return this.post(this.namespace, "SetVolume", volume);
 	}
 
 	public ArrayList<Error> getErrors() {

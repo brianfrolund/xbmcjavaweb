@@ -13,7 +13,7 @@ public class Helper {
 		}
 		return helper;
 	}
-	//	{"message": "foo", "level": "info"}
+	
 	public String getJson(String namespace, String method, Object parameters, Integer id) {
 
 		String parameterString = "";
@@ -31,6 +31,15 @@ public class Helper {
 			}			 
 		}
 		return "{\"jsonrpc\":\"2.0\",\"method\":\"" +namespace+ "." +method+ "\"" +parameterString+ ",\"id\":" +id+ "}";
+	}
+	
+	public boolean getBoolResponse(String response) {
+		if (response.equals("OK")) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 
