@@ -20,7 +20,7 @@ public class Helper {
 
 		if (parameters != null) {
 			if (parameters instanceof JSONObject) {
-				parameterString = ",\"params\":" + parameters.toString();
+				parameterString = ",\"params\":" + parameters.toString().replace("[", "").replace("]", "");
 			}
 			else if (parameters instanceof Integer) {
 				parameterString = ",\"params\":" + parameters.toString();
