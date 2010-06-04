@@ -30,7 +30,7 @@ public class XBMC {
 	//	private Files files = new Files();
 	private Player player = new Player(this);
 	//	private Playlist playlist = new Playlist();
-	//	private Library library = new Library();
+	private Library library = new Library(this);
 
 	public XBMC(String address, String port, String username, String password, boolean debug, int updateInterval) {
 		this.apiPath = "http://" +address+ ":" +port+ "/jsonrpc";
@@ -49,6 +49,9 @@ public class XBMC {
 		return this.debug;
 	}
 	
+	public Library getLibrary() {
+		return this.library;
+	}
 	public Player getPlayer() {
 		return this.player;
 	}
